@@ -6,17 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCampaignRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         $id = $this->route('campaign') ? $this->route('campaign')->id : null;
@@ -40,16 +34,13 @@ class StoreCampaignRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom messages for validator errors.
-     */
     public function messages(): array
     {
         return [
             'name.required' => 'اسم الحملة مطلوب.',
-            'customer_id.required' => 'يرجى اختيار العميل الممِّول.',
-            'customer_id.exists' => 'العميل المالي المحدد غير موجود في النظام.',
-            'end_date.after_or_equal' => 'تاريخ الانتهاء يجب أن يكون مساوياً أو لاحقاً لتاريخ البدء.',
+            'customer_id.required' => 'يرجى اختيار العميل.',
+            'customer_id.exists' => 'العميل المحدد غير موجود في النظام.',
+            'end_date.after_or_equal' => 'تاريخ الانتهاء يجب أن يكون مساويًا أو لاحقًا لتاريخ البداية.',
             'status.in' => 'حالة الحملة المحددة غير صالحة.',
             'coordinator_id.exists' => 'منسق الحملة المحدد غير موجود في النظام.',
         ];
