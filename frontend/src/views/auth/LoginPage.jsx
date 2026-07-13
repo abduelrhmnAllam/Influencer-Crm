@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import useAuthStore from '../../stores/authStore';
-import api from '../../api/client';
+import api, { setAuthToken } from '../../api/client';
 
 const googleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 const DEMO_PASSWORD = 'SmartCodeDemo@2026';
@@ -32,6 +32,7 @@ export default function LoginPage() {
     setError(null); clearError(); setLoading(true);
     try {
       const { data } = await api.post('/api/v1/auth/google/callback', { credential });
+      if (data.token) setAuthToken(data.token);
       useAuthStore.setState({ user: data.user, loading: false, error: null });
     } catch (requestError) { setError(requestError.response?.data?.error || 'فشل تسجيل الدخول باستخدام Google.'); }
     finally { setLoading(false); }
