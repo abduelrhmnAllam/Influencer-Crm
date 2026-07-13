@@ -12,8 +12,6 @@ const api = axios.create({
   },
 });
 
-let csrfCookieFetched = false;
-
 export function setAuthToken(token) {
   if (token) {
     localStorage.setItem(AUTH_TOKEN_KEY, token);
@@ -33,43 +31,18 @@ if (existingToken) {
   api.defaults.headers.common.Authorization = `Bearer ${existingToken}`;
 }
 
-api.interceptors.request.use(async (config) => {
+api.interceptors.request.use((config) => {
   const token = getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    return config;
   }
-
-  const mutatingMethods = ['post', 'put', 'patch', 'delete'];
-  if (mutatingMethods.includes(config.method) && !csrfCookieFetched) {
-    await axios.get(
-      (import.meta.env.VITE_API_URL || '') + '/sanctum/csrf-cookie',
-      { withCredentials: true }
-    );
-    csrfCookieFetched = true;
-  }
-
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const { response, config } = error;
-
-    if (response?.status === 419 && !config._retried && !getAuthToken()) {
-      config._retried = true;
-      csrfCookieFetched = false;
-      await axios.get(
-        (import.meta.env.VITE_API_URL || '') + '/sanctum/csrf-cookie',
-        { withCredentials: true }
-      );
-      csrfCookieFetched = true;
-      return api(config);
-    }
-
-    if (response?.status === 401) {
-      csrfCookieFetched = false;
+    if (error.response?.status === 401) {
       setAuthToken(null);
     }
 
@@ -78,7 +51,6 @@ api.interceptors.response.use(
 );
 
 export function resetCsrf() {
-  csrfCookieFetched = false;
   setAuthToken(null);
 }
 
