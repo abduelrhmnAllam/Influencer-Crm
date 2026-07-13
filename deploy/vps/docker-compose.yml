@@ -33,6 +33,8 @@ services:
       FRONTEND_ORIGINS: ${FRONTEND_ORIGINS}
       SANCTUM_STATEFUL_DOMAINS: ${SANCTUM_STATEFUL_DOMAINS}
       SESSION_DOMAIN: ${SESSION_DOMAIN:-}
+      CACHE_STORE: ${CACHE_STORE:-file}
+      CACHE_DRIVER: ${CACHE_DRIVER:-file}
     depends_on:
       db:
         condition: service_healthy
