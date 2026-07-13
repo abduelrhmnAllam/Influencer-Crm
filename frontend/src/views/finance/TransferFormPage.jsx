@@ -1,0 +1,20 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api/client';
+
+export default function TransferFormPage() {
+  const navigate=useNavigate(); const [campaigns,setCampaigns]=useState([]); const [influencers,setInfluencers]=useState([]);
+  const [form,setForm]=useState({direction:'outgoing',campaign_id:'',customer_id:'',amount_base:'',vat:0,amount_total:'',with_vat:true,reason:'',notes:'',recipient_name:'',influencer_id:'',bank_name:'',iban:''}); const [errors,setErrors]=useState({}); const [saving,setSaving]=useState(false);
+  useEffect(()=>{Promise.all([api.get('/api/v1/campaigns',{params:{per_page:100}}),api.get('/api/v1/influencers',{params:{per_page:100}})]).then(([a,b])=>{setCampaigns(a.data.data||[]);setInfluencers(b.data.data||[]);});},[]);
+  const change=(name,value)=>setForm((old)=>({...old,[name]:value}));
+  const chooseCampaign=(value)=>{const campaign=campaigns.find((item)=>String(item.id)===String(value));setForm((old)=>({...old,campaign_id:value,customer_id:campaign?.customer?.id||''}));};
+  const chooseInfluencer=(value)=>{const influencer=influencers.find((item)=>String(item.id)===String(value));setForm((old)=>({...old,influencer_id:value,recipient_name:influencer?.name||'',bank_name:influencer?.bank_name||'',iban:influencer?.iban||''}));};
+  const submit=async(event)=>{event.preventDefault();setSaving(true);setErrors({});try{await api.post('/api/v1/transfers',{direction:form.direction,campaign_id:form.campaign_id||null,customer_id:form.customer_id||null,amount_base:Number(form.amount_base),vat:Number(form.vat||0),amount_total:Number(form.amount_total),with_vat:form.with_vat,reason:form.reason,notes:form.notes,recipients:[{name:form.recipient_name,influencer_id:form.influencer_id||null,bank_name:form.bank_name,iban:form.iban,amount_total:Number(form.amount_total)}]});navigate('/finance');}catch(error){setErrors(error.response?.data?.errors||{general:[error.response?.data?.message||'تعذر رفع الطلب']});}finally{setSaving(false);}};
+  return <div className='entity-page'><div className='page-heading'><div><p>المالية</p><h1>طلب حوالة جديد</h1><span>أدخل بيانات الحملة والمستفيد والمبلغ.</span></div></div><form className='entity-form' onSubmit={submit}>{errors.general&&<div className='form-alert'>{errors.general[0]}</div>}<div className='form-grid'>
+    <label>الحملة<select value={form.campaign_id} onChange={(e)=>chooseCampaign(e.target.value)}><option value=''>اختر الحملة</option>{campaigns.map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+    <label>المؤثر<select value={form.influencer_id} onChange={(e)=>chooseInfluencer(e.target.value)}><option value=''>اختر المؤثر</option>{influencers.map((item)=><option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+    <label>اسم المستفيد<input value={form.recipient_name} onChange={(e)=>change('recipient_name',e.target.value)} required/></label><label>البنك<input value={form.bank_name} onChange={(e)=>change('bank_name',e.target.value)}/></label><label>IBAN<input value={form.iban} onChange={(e)=>change('iban',e.target.value)} dir='ltr'/></label>
+    <label>المبلغ الأساسي<input type='number' min='0' value={form.amount_base} onChange={(e)=>change('amount_base',e.target.value)} required/></label><label>الضريبة<input type='number' min='0' value={form.vat} onChange={(e)=>change('vat',e.target.value)}/></label><label>الإجمالي<input type='number' min='0' value={form.amount_total} onChange={(e)=>change('amount_total',e.target.value)} required/></label>
+    <label>سبب التحويل<textarea value={form.reason} onChange={(e)=>change('reason',e.target.value)}/></label><label>ملاحظات<textarea value={form.notes} onChange={(e)=>change('notes',e.target.value)}/></label>
+  </div><div className='form-actions'><button type='button' onClick={()=>navigate('/finance')}>إلغاء</button><button className='primary' disabled={saving}>{saving?'جارٍ الإرسال…':'رفع الطلب للمالية'}</button></div></form></div>;
+}

@@ -1,0 +1,39 @@
+# نشر كامل بنقرة واحدة — Smart Code CRM (API + Postgres + Frontend SPA)
+databases:
+  - name: smartcode-db
+    databaseName: smartcode
+    user: smartcode
+    plan: free
+
+services:
+  # ── Laravel API (Docker) ──
+  - type: web
+    name: smartcode-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - { key: APP_ENV, value: production }
+      - { key: APP_DEBUG, value: "false" }
+      - { key: DB_CONNECTION, value: pgsql }
+      - { key: DB_HOST, fromDatabase: { name: smartcode-db, property: host } }
+      - { key: DB_PORT, fromDatabase: { name: smartcode-db, property: port } }
+      - { key: DB_DATABASE, fromDatabase: { name: smartcode-db, property: database } }
+      - { key: DB_USERNAME, fromDatabase: { name: smartcode-db, property: user } }
+      - { key: DB_PASSWORD, fromDatabase: { name: smartcode-db, property: password } }
+      - { key: DB_SSLMODE, value: require }
+      - { key: ADMIN_EMAIL, value: admin@smartcode.sa }
+      - { key: ADMIN_PASSWORD, sync: false }
+      - { key: FRONTEND_ORIGINS, fromService: { name: smartcode-frontend, type: web, property: host } }
+
+  # ── الواجهة (Vite Static React 19 SPA) ──
+  - type: web
+    name: smartcode-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: dist
+    envVars:
+      - { key: VITE_API_URL, fromService: { name: smartcode-api, type: web, property: host } }
