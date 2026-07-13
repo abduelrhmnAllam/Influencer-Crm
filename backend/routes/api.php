@@ -69,6 +69,11 @@ Route::prefix('v1')->group(function () {
         // Content
         Route::apiResource('contents', \App\Http\Controllers\Api\V1\ContentController::class);
         Route::post('contents/{content}/analyze', [\App\Http\Controllers\Api\V1\ContentController::class, 'analyze']);
+        // UGC Admin
+        Route::get('ugc-admin/overview', [\App\Http\Controllers\Api\V1\UgcAdminController::class, 'overview']);
+        Route::post('ugc-admin/applications/{id}/decision', [\App\Http\Controllers\Api\V1\UgcAdminController::class, 'applicationDecision']);
+        Route::post('ugc-admin/submissions/{id}/status', [\App\Http\Controllers\Api\V1\UgcAdminController::class, 'submissionStatus']);
+        Route::post('ugc-admin/campaigns/{id}/status', [\App\Http\Controllers\Api\V1\UgcAdminController::class, 'campaignStatus']);
         
         // Notifications
         Route::get('notifications', [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);

@@ -15,6 +15,7 @@ import DashboardPage from './views/dashboard/DashboardPage';
 import ModulePage from './views/modules/ModulePage';
 import AnalyticsPage from './views/analytics/AnalyticsPage';
 import ContentPage from './views/content/ContentPage';
+import UgcAdminPage from './views/ugc/UgcAdminPage';
 import SettingsPage from './views/settings/SettingsPage';
 import EntityFormPage from './views/crud/EntityFormPage';
 import EntityDetailPage from './views/crud/EntityDetailPage';
@@ -238,7 +239,7 @@ function App() {
           <Route path='/requests-users' element={<Navigate to='/request-users' replace/>}/>
           <Route path='/publishers' element={<PrivateRoute permission='view-influencers'><AppShell><LegacyPage type='publishers'/></AppShell></PrivateRoute>}/>
           <Route path='/publisher-detail' element={<PrivateRoute permission='view-influencers'><AppShell><LegacyPage type='publisher'/></AppShell></PrivateRoute>}/>
-          <Route path='/ugc-admin' element={<PrivateRoute permission='view-content'><AppShell><LegacyPage type='ugc'/></AppShell></PrivateRoute>}/>
+          <Route path='/ugc-admin' element={<PrivateRoute permission='view-content'><AppShell><UgcAdminPage /></AppShell></PrivateRoute>}/>
           <Route path='/orders-campaigns' element={<PrivateRoute permission='view-campaigns'><AppShell><LegacyPage type='orders'/></AppShell></PrivateRoute>}/>
           <Route path='/monthly-report' element={<PrivateRoute permission='view-analytics'><AppShell><LegacyPage type='report'/></AppShell></PrivateRoute>}/>
           <Route path='/document' element={<PrivateRoute permission='view-content'><AppShell><LegacyPage type='document'/></AppShell></PrivateRoute>}/>
