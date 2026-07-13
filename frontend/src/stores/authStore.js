@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import api, { resetCsrf, setAuthToken } from '../api/client';
+import api, { getAuthToken, resetCsrf, setAuthToken } from '../api/client';
 
 /**
  * Authentication Store (Zustand)
@@ -18,6 +18,10 @@ const useAuthStore = create((set, get) => ({
    * Called on app initialization to check if a valid session cookie exists.
    */
   fetchUser: async () => {
+    if (!getAuthToken()) {
+      set({ user: null, loading: false, error: null });
+      return null;
+    }
     set({ loading: true, error: null });
     try {
       const { data } = await api.get('/api/v1/auth/me');
