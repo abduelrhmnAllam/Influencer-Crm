@@ -45,11 +45,6 @@ class AuthController extends Controller
             ], 403);
         }
 
-        if ($request->hasSession()) {
-            Auth::login($user);
-            $request->session()->regenerate();
-        }
-
         $user->update(['last_login_at' => now()]);
         $token = $user->createToken('smartcode-web')->plainTextToken;
 
