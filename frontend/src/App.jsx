@@ -14,6 +14,7 @@ import TransferWorkspace from './views/finance/TransferWorkspace';
 import DashboardPage from './views/dashboard/DashboardPage';
 import ModulePage from './views/modules/ModulePage';
 import AnalyticsPage from './views/analytics/AnalyticsPage';
+import ContentPage from './views/content/ContentPage';
 import SettingsPage from './views/settings/SettingsPage';
 import EntityFormPage from './views/crud/EntityFormPage';
 import EntityDetailPage from './views/crud/EntityDetailPage';
@@ -207,7 +208,7 @@ function App() {
             } 
           />
           <Route path='/404' element={<NotFoundPage/>}/>
-          <Route path='/content' element={<PrivateRoute permission='view-content'><AppShell><ModulePage type='content' /></AppShell></PrivateRoute>} />
+          <Route path='/content' element={<PrivateRoute permission='view-content'><AppShell><ContentPage /></AppShell></PrivateRoute>} />
           <Route path='/requests' element={<PrivateRoute permission='view-requests'><AppShell><RequestsPage /></AppShell></PrivateRoute>} />
           <Route path='/analytics' element={<PrivateRoute permission='view-analytics'><AppShell><AnalyticsPage /></AppShell></PrivateRoute>} />
           <Route path='/notifications' element={<PrivateRoute permission='view-notifications'><AppShell><ModulePage type='notifications' /></AppShell></PrivateRoute>} />
