@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import useAuthStore from './stores/authStore';
@@ -12,7 +12,8 @@ import CalendarPage from './views/calendar/CalendarPage';
 import WhatsAppChatPage from './views/whatsapp/WhatsAppChatPage';
 import TransferWorkspace from './views/finance/TransferWorkspace';
 import DashboardPage from './views/dashboard/DashboardPage';
-import ModulePage, { AnalyticsPage } from './views/modules/ModulePage';
+import ModulePage from './views/modules/ModulePage';
+import AnalyticsPage from './views/analytics/AnalyticsPage';
 import SettingsPage from './views/settings/SettingsPage';
 import EntityFormPage from './views/crud/EntityFormPage';
 import EntityDetailPage from './views/crud/EntityDetailPage';
