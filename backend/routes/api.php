@@ -55,6 +55,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('daily-ads', \App\Http\Controllers\Api\V1\DailyAdController::class);
         
         // Transfers (Finance)
+        Route::get('transfers/finance-overview', [TransferController::class, 'financeOverview']);
         Route::apiResource('transfers', TransferController::class);
         Route::post('transfers/{transfer}/upload', [TransferController::class, 'upload']);
         Route::post('transfers/{transfer}/send-receipt', [TransferController::class, 'sendReceiptToInfluencer']);

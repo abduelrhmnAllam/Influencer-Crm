@@ -14,6 +14,47 @@ use App\Models\User;
 
 class TransferController extends Controller
 {
+    public function financeOverview(Request $request)
+    {
+        $base = Transfer::query();
+        $stages = ['1', '2', '3', 'complete'];
+        $stageData = [];
+
+        foreach ($stages as $stage) {
+            $q = (clone $base)->where('workflow_stage', $stage);
+            $stageData[$stage] = [
+                'count' => (int) $q->count(),
+                'amount' => (float) $q->sum('amount_total'),
+            ];
+        }
+
+        $totalAmount = (float) (clone $base)->sum('amount_total');
+        $openAmount = (float) (clone $base)->where('workflow_stage', '!=', 'complete')->sum('amount_total');
+        $completedAmount = (float) (clone $base)->where('workflow_stage', 'complete')->sum('amount_total');
+
+        return response()->json([
+            'data' => [
+                'totals' => [
+                    'count' => (int) (clone $base)->count(),
+                    'total_amount' => $totalAmount,
+                    'open_amount' => $openAmount,
+                    'completed_amount' => $completedAmount,
+                    'incoming_amount' => (float) (clone $base)->where('direction', 'incoming')->sum('amount_total'),
+                    'outgoing_amount' => (float) (clone $base)->where('direction', 'outgoing')->sum('amount_total'),
+                ],
+                'stages' => $stageData,
+                'documents' => [
+                    'receipts' => (int) TransferAttachment::where('type', 'receipt')->whereHas('transfer')->count(),
+                    'tax_invoices' => (int) TransferAttachment::where('type', 'tax_invoice')->whereHas('transfer')->count(),
+                    'other' => (int) TransferAttachment::whereNotIn('type', ['receipt', 'tax_invoice'])->whereHas('transfer')->count(),
+                ],
+                'hero' => [
+                    'title' => "\u{0627}\u{0644}\u{0645}\u{0627}\u{0644}\u{064A}\u{0629}",
+                    'subtitle' => "\u{0627}\u{0644}\u{062A}\u{062D}\u{0635}\u{064A}\u{0644}\u{0627}\u{062A} \u{0648}\u{0627}\u{0644}\u{0645}\u{062F}\u{0641}\u{0648}\u{0639}\u{0627}\u{062A} \u{0648}\u{0627}\u{0644}\u{062D}\u{0648}\u{0627}\u{0644}\u{0627}\u{062A} \u{0648}\u{0627}\u{0644}\u{0645}\u{0633}\u{062A}\u{0646}\u{062F}\u{0627}\u{062A}",
+                ],
+            ],
+        ]);
+    }
     public function index(Request $request)
     {
         $query = Transfer::with([
@@ -21,6 +62,11 @@ class TransferController extends Controller
             'customer:id,name',
             'requester:id,name',
             'assignee:id,name',
+            'recipients:id,transfer_id,name,bank_name,iban,amount_total',
+            'attachments:id,transfer_id,type,file_name,created_at',
+        ])->withCount([
+            'receipts as receipts_count',
+            'taxInvoices as tax_invoices_count',
         ]);
 
         if ($stage = $request->input('stage')) {
@@ -126,6 +172,9 @@ class TransferController extends Controller
             'customer:id,name,phone',
             'requester:id,name',
             'assignee:id,name',
+        ])->loadCount([
+            'receipts as receipts_count',
+            'taxInvoices as tax_invoices_count',
         ]);
 
         return response()->json(['data' => $transfer]);
@@ -354,3 +403,4 @@ class TransferController extends Controller
                "Ãƒâ„¢Ã¢â‚¬Â¦ÃƒËœÃ‚Â¹ ÃƒËœÃ‚ÂªÃƒËœÃ‚Â­Ãƒâ„¢Ã…Â ÃƒËœÃ‚Â§ÃƒËœÃ‚ÂªÃƒËœÃ…â€™\nÃƒâ„¢Ã‚ÂÃƒËœÃ‚Â±Ãƒâ„¢Ã…Â Ãƒâ„¢Ã¢â‚¬Å¡ ÃƒËœÃ‚Â¥ÃƒËœÃ‚Â¯ÃƒËœÃ‚Â§ÃƒËœÃ‚Â±ÃƒËœÃ‚Â© ÃƒËœÃ‚Â§Ãƒâ„¢Ã¢â‚¬Å¾ÃƒËœÃ‚Â­Ãƒâ„¢Ã¢â‚¬Â¦Ãƒâ„¢Ã¢â‚¬Å¾ÃƒËœÃ‚Â§ÃƒËœÃ‚Âª";
     }
 }
+

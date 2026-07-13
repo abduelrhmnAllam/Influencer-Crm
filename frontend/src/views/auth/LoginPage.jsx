@@ -6,10 +6,10 @@ import api from '../../api/client';
 const googleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 const DEMO_PASSWORD = 'SmartCodeDemo@2026';
 const demoAccounts = [
-  { username: 'admin', label: 'مدير الوكالة', icon: '👑' },
-  { username: 'manager', label: 'مدير الحملات', icon: '📣' },
-  { username: 'finance', label: 'المدير المالي', icon: '💳' },
-  { username: 'viewer', label: 'حساب المشاهدة', icon: '👁️' },
+  { username: 'admin', email: 'admin@smartcode.local', label: 'مدير الوكالة', icon: '👑' },
+  { username: 'manager', email: 'manager@smartcode.local', label: 'مدير الحملات', icon: '📣' },
+  { username: 'finance', email: 'finance@smartcode.local', label: 'المدير المالي', icon: '💳' },
+  { username: 'viewer', email: 'viewer@smartcode.local', label: 'حساب المشاهدة', icon: '👁️' },
 ];
 
 export default function LoginPage() {
@@ -49,7 +49,7 @@ export default function LoginPage() {
     <section className='login-form-side'><div className='login-form-wrap'><h1>مرحباً بعودتك</h1><p>سجّل دخولك للوصول إلى لوحة التحكم وإدارة أعمالك.</p>
       {(error || authError) && <div className='login-error'>{error || authError}</div>}
       <form onSubmit={submit}><label>اسم المستخدم أو البريد الإلكتروني<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete='username' placeholder='username or email' dir='ltr' disabled={loading}/></label><label>كلمة المرور<input type='password' value={password} onChange={(event) => setPassword(event.target.value)} autoComplete='current-password' placeholder='••••••••' dir='ltr' disabled={loading}/></label><button disabled={loading}>{loading ? 'جارٍ الدخول…' : 'تسجيل الدخول'}</button></form>
-      {import.meta.env.DEV && <section className='demo-login'><p>حسابات اختبار الصلاحيات</p><div>{demoAccounts.map((account)=><button type='button' key={account.username} onClick={() => selectDemo(account)} className={username === account.username ? 'active' : ''}><span>{account.icon}</span><b>{account.label}</b><small>{account.username}</small></button>)}</div><small>اختر الحساب وسيتم ملء اسم المستخدم وكلمة المرور تلقائياً: <b dir='ltr'>{DEMO_PASSWORD}</b></small><div className='demo-portal-info'><strong>بوابة العملاء:</strong><span dir='ltr'>rqu_demo_client_2026_smartcode</span><em>Demo nomination ID: 1</em></div></section>}
+      <section className='demo-login'><p>حسابات اختبار الصلاحيات</p><div>{demoAccounts.map((account)=><button type='button' key={account.username} onClick={() => selectDemo(account)} className={username === account.username ? 'active' : ''}><span>{account.icon}</span><b>{account.label}</b><small dir='ltr'>{account.username}</small><em dir='ltr'>{account.email}</em></button>)}</div><small>اختر الحساب وسيتم ملء اسم المستخدم وكلمة المرور تلقائياً: <b dir='ltr'>{DEMO_PASSWORD}</b></small><div className='demo-portal-info'><strong>بوابة العملاء:</strong><span dir='ltr'>rqu_demo_client_2026_smartcode</span><em>Demo nomination ID: 1</em></div></section>
       <div className='login-divider'>أو تابع باستخدام</div>{googleEnabled ? <GoogleLogin onSuccess={googleLogin} onError={() => setError('تعذّر الاتصال بخدمة Google.')} width='380' locale='ar'/> : <p className='google-notice'>يلزم إعداد Google OAuth لتفعيل تسجيل الدخول عبر Gmail.</p>}
     </div></section>
   </main>;
