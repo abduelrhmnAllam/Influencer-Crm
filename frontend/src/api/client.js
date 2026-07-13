@@ -1,11 +1,7 @@
 import axios from 'axios';
 
-/**
- * Axios instance configured for Laravel Sanctum stateful cookie authentication.
- * 
- * IMPORTANT: `withCredentials: true` is required for HttpOnly cookies to be
- * sent and received across the frontend ↔ backend boundary.
- */
+const AUTH_TOKEN_KEY = 'smartcode_auth_token';
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '',
   withCredentials: true,
@@ -16,17 +12,35 @@ const api = axios.create({
   },
 });
 
-/**
- * CSRF Token Interceptor
- * Before any state-mutating request (POST, PUT, PATCH, DELETE),
- * fetch a fresh CSRF cookie from `/sanctum/csrf-cookie`.
- * This is a Sanctum requirement for stateful SPA authentication.
- */
 let csrfCookieFetched = false;
 
-api.interceptors.request.use(async (config) => {
-  const mutatingMethods = ['post', 'put', 'patch', 'delete'];
+export function setAuthToken(token) {
+  if (token) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    delete api.defaults.headers.common.Authorization;
+  }
+}
 
+export function getAuthToken() {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+const existingToken = getAuthToken();
+if (existingToken) {
+  api.defaults.headers.common.Authorization = `Bearer ${existingToken}`;
+}
+
+api.interceptors.request.use(async (config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  }
+
+  const mutatingMethods = ['post', 'put', 'patch', 'delete'];
   if (mutatingMethods.includes(config.method) && !csrfCookieFetched) {
     await axios.get(
       (import.meta.env.VITE_API_URL || '') + '/sanctum/csrf-cookie',
@@ -38,18 +52,12 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
-/**
- * Response Interceptor
- * Handle 401 (unauthenticated) globally — redirect to login page.
- * Handle 419 (CSRF token mismatch) — refetch CSRF cookie and retry.
- */
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { response, config } = error;
 
-    // CSRF token expired → refetch and retry once
-    if (response?.status === 419 && !config._retried) {
+    if (response?.status === 419 && !config._retried && !getAuthToken()) {
       config._retried = true;
       csrfCookieFetched = false;
       await axios.get(
@@ -60,21 +68,18 @@ api.interceptors.response.use(
       return api(config);
     }
 
-    // Unauthenticated → let the auth store handle redirect
     if (response?.status === 401) {
-      // The authStore listener will handle the redirect to /login
       csrfCookieFetched = false;
+      setAuthToken(null);
     }
 
     return Promise.reject(error);
   }
 );
 
-/**
- * Reset CSRF state (call on logout)
- */
 export function resetCsrf() {
   csrfCookieFetched = false;
+  setAuthToken(null);
 }
 
 export default api;

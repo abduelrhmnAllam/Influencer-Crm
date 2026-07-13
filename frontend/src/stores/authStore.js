@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import api, { resetCsrf } from '../api/client';
+import api, { resetCsrf, setAuthToken } from '../api/client';
 
 /**
  * Authentication Store (Zustand)
@@ -38,6 +38,7 @@ const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await api.post('/api/v1/auth/login', { username, password });
+      if (data.token) setAuthToken(data.token);
       set({ user: data.user, loading: false });
       return data.user;
     } catch (err) {
@@ -61,6 +62,7 @@ const useAuthStore = create((set, get) => ({
       // Even if the request fails, clear local state
     }
     resetCsrf();
+    setAuthToken(null);
     set({ user: null, loading: false, error: null });
   },
 
