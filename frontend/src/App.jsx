@@ -16,10 +16,13 @@ import ModulePage from './views/modules/ModulePage';
 import AnalyticsPage from './views/analytics/AnalyticsPage';
 import ContentPage from './views/content/ContentPage';
 import UgcAdminPage from './views/ugc/UgcAdminPage';
+import UgcPortalPage from './views/portal/UgcPortalPage';
 import OrdersCampaignsPage from './views/orders/OrdersCampaignsPage';
 import SettingsPage from './views/settings/SettingsPage';
 import EntityFormPage from './views/crud/EntityFormPage';
 import EntityDetailPage from './views/crud/EntityDetailPage';
+import CustomerAddPage from './views/customers/CustomerAddPage';
+import CustomerDetailPage from './views/customers/CustomerDetailPage';
 import TransferFormPage from './views/finance/TransferFormPage';
 import TransferDetailPage from './views/finance/TransferDetailPage';
 import RequestFormPage from './views/requests/RequestFormPage';
@@ -30,6 +33,12 @@ import RequestsPortalPage from './views/portal/RequestsPortalPage';
 import ApprovalPage from './views/portal/ApprovalPage';
 import LegacyPage from './views/modules/LegacyPage';
 import LegacyRedirect, { NotFoundPage } from './views/modules/LegacyRedirect';
+import InfluencerAddPage from './views/influencers/InfluencerAddPage';
+import InfluencerDetailPage from './views/influencers/InfluencerDetailPage';
+import InfluencerBookingPage from './views/influencers/InfluencerBookingPage';
+import InfluencerPortalPage from './views/influencers/InfluencerPortalPage';
+import PublisherListPage from './views/publishers/PublisherListPage';
+import PublisherDetailPage from './views/publishers/PublisherDetailPage';
 
 // Placeholder Dashboard Page (will be fully designed in Phase 5)
 /* Legacy placeholder retained temporarily for history.
@@ -125,8 +134,7 @@ function App() {
             } 
           />
           <Route path='/requests-portal' element={<RequestsPortalPage/>}/>
-          <Route path='/ugc-portal' element={<RequestsPortalPage/>}/>
-          <Route path='/influencer-portal' element={<RequestsPortalPage/>}/>
+          <Route path='/influencer-portal' element={<InfluencerPortalPage/>}/>
           <Route path='/campaign-approval' element={<ApprovalPage title='اعتماد ترشيحات الحملة'/>}/>
           <Route path='/client-approval' element={<ApprovalPage title='اعتماد المؤثرين للعميل'/>}/>
           <Route 
@@ -215,12 +223,12 @@ function App() {
           <Route path='/analytics' element={<PrivateRoute permission='view-analytics'><AppShell><AnalyticsPage /></AppShell></PrivateRoute>} />
           <Route path='/notifications' element={<PrivateRoute permission='view-notifications'><AppShell><ModulePage type='notifications' /></AppShell></PrivateRoute>} />
           <Route path='/settings' element={<PrivateRoute permission='view-settings'><AppShell><SettingsPage /></AppShell></PrivateRoute>} />
-          <Route path='/customers/add' element={<PrivateRoute permission='create-customers'><AppShell><EntityFormPage type='customer'/></AppShell></PrivateRoute>} />
-          <Route path='/customers/:id/edit' element={<PrivateRoute permission='edit-customers'><AppShell><EntityFormPage type='customer'/></AppShell></PrivateRoute>} />
-          <Route path='/customers/:id' element={<PrivateRoute permission='view-customers'><AppShell><EntityDetailPage type='customer'/></AppShell></PrivateRoute>} />
-          <Route path='/influencers/add' element={<PrivateRoute permission='create-influencers'><AppShell><EntityFormPage type='influencer'/></AppShell></PrivateRoute>} />
-          <Route path='/influencers/:id/edit' element={<PrivateRoute permission='edit-influencers'><AppShell><EntityFormPage type='influencer'/></AppShell></PrivateRoute>} />
-          <Route path='/influencers/:id' element={<PrivateRoute permission='view-influencers'><AppShell><EntityDetailPage type='influencer'/></AppShell></PrivateRoute>} />
+          <Route path='/customers/add' element={<PrivateRoute permission='create-customers'><AppShell><CustomerAddPage /></AppShell></PrivateRoute>} />
+          <Route path='/customers/:id/edit' element={<PrivateRoute permission='edit-customers'><AppShell><CustomerAddPage /></AppShell></PrivateRoute>} />
+          <Route path='/customers/:id' element={<PrivateRoute permission='view-customers'><AppShell><CustomerDetailPage /></AppShell></PrivateRoute>} />
+          <Route path='/influencers/add' element={<PrivateRoute permission='create-influencers'><AppShell><InfluencerAddPage/></AppShell></PrivateRoute>} />
+          <Route path='/influencers/:id/edit' element={<PrivateRoute permission='edit-influencers'><AppShell><InfluencerAddPage/></AppShell></PrivateRoute>} />
+          <Route path='/influencers/:id' element={<PrivateRoute permission='view-influencers'><AppShell><InfluencerDetailPage/></AppShell></PrivateRoute>} />
           <Route path='/campaigns/add' element={<PrivateRoute permission='create-campaigns'><AppShell><EntityFormPage type='campaign'/></AppShell></PrivateRoute>} />
           <Route path='/campaigns/:id/edit' element={<PrivateRoute permission='edit-campaigns'><AppShell><EntityFormPage type='campaign'/></AppShell></PrivateRoute>} />
           <Route path='/campaigns/:id' element={<PrivateRoute permission='view-campaigns'><AppShell><EntityDetailPage type='campaign'/></AppShell></PrivateRoute>} />
@@ -238,13 +246,15 @@ function App() {
           <Route path='/transfer-detail' element={<PrivateRoute permission='view-transfers'><LegacyRedirect base='/finance' fallback='/finance'/></PrivateRoute>}/>
           <Route path='/request-detail' element={<PrivateRoute permission='view-requests'><LegacyRedirect base='/requests' fallback='/requests'/></PrivateRoute>}/>
           <Route path='/requests-users' element={<Navigate to='/request-users' replace/>}/>
-          <Route path='/publishers' element={<PrivateRoute permission='view-influencers'><AppShell><LegacyPage type='publishers'/></AppShell></PrivateRoute>}/>
-          <Route path='/publisher-detail' element={<PrivateRoute permission='view-influencers'><AppShell><LegacyPage type='publisher'/></AppShell></PrivateRoute>}/>
+          <Route path='/publishers' element={<PrivateRoute permission='view-influencers'><AppShell><PublisherListPage/></AppShell></PrivateRoute>}/>
+          <Route path='/publishers/:id' element={<PrivateRoute permission='view-influencers'><AppShell><PublisherDetailPage/></AppShell></PrivateRoute>}/>
+          <Route path='/publisher-detail' element={<PrivateRoute permission='view-influencers'><LegacyRedirect base='/publishers' fallback='/publishers'/></PrivateRoute>}/>
           <Route path='/ugc-admin' element={<PrivateRoute permission='view-content'><AppShell><UgcAdminPage /></AppShell></PrivateRoute>}/>
           <Route path='/orders-campaigns' element={<PrivateRoute permission='view-campaigns'><AppShell><OrdersCampaignsPage /></AppShell></PrivateRoute>}/>
           <Route path='/monthly-report' element={<PrivateRoute permission='view-analytics'><AppShell><LegacyPage type='report'/></AppShell></PrivateRoute>}/>
           <Route path='/document' element={<PrivateRoute permission='view-content'><AppShell><LegacyPage type='document'/></AppShell></PrivateRoute>}/>
-          <Route path='/influencer-booking' element={<PrivateRoute permission='create-requests'><AppShell><LegacyPage type='booking'/></AppShell></PrivateRoute>}/>
+          <Route path='/influencer-booking' element={<InfluencerBookingPage/>}/>
+          <Route path='/ugc-portal' element={<UgcPortalPage/>}/>
           <Route path='/index' element={<Navigate to='/dashboard' replace/>}/>
           <Route path='*' element={<NotFoundPage/>}/>
         </Routes>

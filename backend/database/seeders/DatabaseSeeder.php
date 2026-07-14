@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AgencyAdminSeeder::class,
             RolesAndPermissionsSeeder::class,
             DemoDataSeeder::class,
+            InfluencerSeeder::class,
         ]);
 
         // 2) مستخدمو أدوار قانونية تحت الوكالة الافتراضية (بلا كلمات مرور ضعيفة)

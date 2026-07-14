@@ -35,7 +35,7 @@ class InfluencerController extends Controller
             $query->orderBy($field, $direction);
         }
 
-        $perPage = min((int) $request->input('per_page', 25), 100);
+        $perPage = min((int) $request->input('per_page', 25), 3000);
         return InfluencerResource::collection($query->paginate($perPage));
     }
 
