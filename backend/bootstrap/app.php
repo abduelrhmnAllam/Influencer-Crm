@@ -17,9 +17,19 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'plan.limit' => \App\Http\Middleware\EnforcePlanLimit::class,
         ]);
-
         // Sanctum stateful cookie authentication for API routes
         $middleware->statefulApi();
+
+        // The React app authenticates API users with Sanctum Bearer tokens.
+        // When local Vite proxy sends localhost cookies, statefulApi may enforce CSRF
+        // before the login token exists and return 419. These auth endpoints are
+        // token/API entry points, so they are intentionally excluded from CSRF.
+        $middleware->validateCsrfTokens(except: [
+            'api/v1/auth/login',
+            'api/v1/auth/logout',
+            'api/v1/auth/register',
+            'api/v1/auth/google/*',
+        ]);
 
         // Tenant context must exist before Laravel resolves implicit model bindings.
         // Otherwise AgencyScope intentionally fails closed and valid detail/update
