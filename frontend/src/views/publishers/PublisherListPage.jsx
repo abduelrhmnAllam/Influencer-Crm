@@ -60,7 +60,11 @@ export default function PublisherListPage() {
 
   const enrich = (inf) => {
     const plats = {};
-    const apiPlatforms = inf.additional_platforms || inf.platforms || [];
+    let apiPlatforms = inf.additional_platforms || inf.platforms || [];
+    if (typeof apiPlatforms === 'string') {
+      try { apiPlatforms = JSON.parse(apiPlatforms); } catch (e) { apiPlatforms = []; }
+    }
+    
     apiPlatforms.forEach(pl => {
       const key = normPlat(pl.platform_name);
       if (!key) return;
@@ -77,7 +81,10 @@ export default function PublisherListPage() {
 
     const platforms = Object.values(plats).sort((a, b) => b.followers - a.followers);
     const followers = platforms.reduce((s, p) => s + p.followers, 0);
-    const tags = inf.tags || {};
+    let tags = inf.tags || {};
+    if (typeof tags === 'string') {
+      try { tags = JSON.parse(tags); } catch (e) { tags = {}; }
+    }
     const gender = parseGender(tags.gender_ratio || inf.gender_ratio);
     const topAge = normAge(tags.audience_age || inf.audience_age);
     const nationality = tags.nationality || inf.nationality || '';

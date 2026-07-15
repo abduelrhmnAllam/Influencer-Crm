@@ -128,14 +128,14 @@ class InfluencerSeeder extends Seeder
                 'account_holder' => $name,
                 'status' => 'active',
                 'notes' => 'تمت الإضافة من خلال seeder',
-                'social_links' => json_encode(['website' => 'https://example.com/' . $username]),
-                'tags' => json_encode([
+                'social_links' => ['website' => 'https://example.com/' . $username],
+                'tags' => [
                     'engagement_rate' => rand(1, 15) + (rand(0, 9) / 10),
                     'audience_age' => ['13-17', '18-24', '25-34', '35-44', '45+'][rand(0, 4)],
                     'show_face' => rand(0, 1) ? true : false,
                     'classification' => ['vip', 'premium', 'standard'][rand(0, 2)]
-                ]),
-                'additional_platforms' => json_encode($all_platforms),
+                ],
+                'additional_platforms' => $all_platforms,
                 'assignee_id' => $assignee_id,
                 'created_at' => now()->subDays(rand(1, 300)),
                 'updated_at' => now()->subDays(rand(0, 30)),
